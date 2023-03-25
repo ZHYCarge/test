@@ -17,7 +17,7 @@ jobs:
           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
           comment-body: '${index}. ${similarity} #${number}'
           
-      - name: reduce_info  
+      - name: get_issue_number  
         if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
         uses: actions/github-script@v4
         id: get_issue_number
