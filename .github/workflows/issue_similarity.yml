@@ -17,9 +17,29 @@ jobs:
           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
           comment-body: '${index}. ${similarity} #${number}'
           
-      - name: output things 
-        run: 
-          echo "The similarity score is${{ steps.analysis.outputs.similar-issues-number }}"
-          echo "你可以输出内容吗？？？？"
-          ehco "你个小垃圾"
+      - name: reduce_info  
+        if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
+        uses: actions/github-script@v4
+        id: get_issue_number
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.issue.number;
+            console.log(`Issue number is ${issueNumber}`);
+            return { issueNumber };
+      - name: close issue 
+        if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = ${{ steps.get_issue_number.outputs.issueNumber }};
+            const octokit = github.getOctokit(context.token);
+            await octokit.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed'
+            });
+            console.log(`Issue ${issueNumber} closed`);
 
