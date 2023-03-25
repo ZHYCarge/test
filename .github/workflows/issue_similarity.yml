@@ -10,12 +10,12 @@ jobs:
     steps:
       - name: analysis
         uses: actions-cool/issues-similarity-analysis@v1
+        id: you1234
         with:
           filter-threshold: 0.7
           title-excludes: 'bug, not'
           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
           comment-body: '${index}. ${similarity} #${number}'
-          id: 1234
       - name: output things 
-        run: echo"${{ steps.1234.outputs }}"
+        run: echo"The similarity score is${{ steps.you1234.outputs }}"
 
