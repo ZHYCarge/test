@@ -17,5 +17,5 @@ jobs:
           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
           comment-body: '${index}. ${similarity} #${number}'
       - name: output things 
-        run: echo"The similarity score is${{ steps.you1234.outputs }}"
+        run: echo "The similarity score is${{ steps.you1234.outputs }}"
 
