@@ -28,6 +28,51 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Check for duplicates and close them
-        uses: dorny/autoclose@v1.2.1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node -e '
+          const core = require("@actions/core");
+          const { Octokit } = require("@octokit/rest");
+          const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+          const issue = await octokit.rest.issues.get({
+            owner: process.env.GITHUB_REPOSITORY.split("/")[0],
+            repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+            issue_number: process.env.GITHUB_ISSUE_NUMBER,
+          });
+
+          const query = `repo:${process.env.GITHUB_REPOSITORY} is:issue is:open in:title "${issue.data.title}"`;
+          const { data: { items } } = await octokit.rest.search.issuesAndPullRequests({ q: query });
+
+          const duplicates = items.filter((item) => item.number !== issue.data.number);
+          if (duplicates.length > 0) {
+            const comment = "This issue has been closed as a duplicate of the following issues:";
+            for (const duplicate of duplicates) {
+              await octokit.rest.issues.createComment({
+                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
+                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+                issue_number: process.env.GITHUB_ISSUE_NUMBER,
+                body: `- [#${duplicate.number}](${duplicate.html_url}): ${duplicate.title}`,
+              });
+              await octokit.rest.issues.addLabels({
+                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
+                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+                issue_number: process.env.GITHUB_ISSUE_NUMBER,
+                labels: ["duplicate"],
+              });
+              await octokit.rest.issues.update({
+                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
+                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+                issue_number: process.env.GITHUB_ISSUE_NUMBER,
+                state: "closed",
+              });
+            }
+            await octokit.rest.issues.createComment({
+              owner: process.env.GITHUB_REPOSITORY.split("/")[0],
+              repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+              issue_number: process.env.GITHUB_ISSUE_NUMBER,
+              body: comment,
+            });
+          }
+          '
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
