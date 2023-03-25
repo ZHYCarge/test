@@ -1,38 +1,25 @@
-# name: Issues Similarity Analysis
-
-# on:
-#   issues:
-#     types: [opened, edited]
-
-# jobs:
-#   similarity-analysis:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: analysis
-#         uses: actions-cool/issues-similarity-analysis@v1
-#         id: you1234
-#         with:
-#           filter-threshold: 0.7
-#           title-excludes: 'bug, not'
-#           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
-#           comment-body: '${index}. ${similarity} #${number}'
-          
-#       - name: output things 
-#         run: 
-#           echo "The similarity score is${{ steps.analysis.outputs.similar-issues-number }}"
-#           echo "你可以输出内容吗？？？？"
-#           ehco "你个小垃圾"
-
-name: Output String Example
+name: Issues Similarity Analysis
 
 on:
-  push:
-    branches:
-      - main
+  issues:
+    types: [opened, edited]
 
 jobs:
-  build:
+  similarity-analysis:
     runs-on: ubuntu-latest
     steps:
-      - name: Output string
-        run: echo "Hello, world!"
+      - name: analysis
+        uses: actions-cool/issues-similarity-analysis@v1
+        id: you1234
+        with:
+          filter-threshold: 0.7
+          title-excludes: 'bug, not'
+          comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
+          comment-body: '${index}. ${similarity} #${number}'
+          
+      - name: output things 
+        run: 
+          echo "The similarity score is${{ steps.analysis.outputs.similar-issues-number }}"
+          echo "你可以输出内容吗？？？？"
+          ehco "你个小垃圾"
+
