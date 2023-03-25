@@ -17,32 +17,21 @@ jobs:
           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
           comment-body: '${index}. ${similarity} #${number}'
           
-      - name: get_issue_number  
-        if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
-        uses: actions/github-script@v4
-        id: get_issue_number
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const issueNumber = context.issue.number;
-            console.log(`Issue number is ${issueNumber}`);
-            return { issueNumber };
+#       - name: get_issue_number  
+#         if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
+#         uses: actions/github-script@v4
+#         id: get_issue_number
+#         with:
+#           github-token: ${{ secrets.GITHUB_TOKEN }}
+#           script: |
+#             const issueNumber = context.issue.number;
+#             console.log(`Issue number is ${issueNumber}`);
+#             return { issueNumber };
             
       - name: close issue 
         if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
-        uses: actions/github-script@v4
+        uses: peter-evans/close-issue@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-#           const issueNumber = ${{ steps.get_issue_number.outputs.issueNumber }};
-          script: |
-            const issueNumber = 7;
-             console.log(`Issue number isis ${issueNumber}`);
-            const octokit = github.getOctokit(context.token);
-            await octokit.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              state: 'closed'
-            });
-            console.log(`Issue ${issueNumber} closed`);
+          issue-number: ${{ github.event.issue.number }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
