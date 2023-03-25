@@ -37,7 +37,6 @@ jobs:
           script: |
             const issueNumber = 7;
              console.log(`Issue number isis ${issueNumber}`);
-             console.log(`Issue number isis ${secrets.GITHUB_TOKEN}`);
             const octokit = github.getOctokit(context.token);
             await octokit.rest.issues.update({
               owner: context.repo.owner,
