@@ -18,5 +18,8 @@ jobs:
           comment-body: '${index}. ${similarity} #${number}'
           
       - name: output things 
-        run: echo "The similarity score is${{ steps.analysis.outputs.similar-issues-number }}"
+        run: 
+          echo "The similarity score is${{ steps.analysis.outputs.similar-issues-number }}"
+          echo "你可以输出内容吗？？？？"
+          ehco "你个小垃圾"
 
