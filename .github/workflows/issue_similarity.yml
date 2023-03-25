@@ -27,13 +27,15 @@ jobs:
             const issueNumber = context.issue.number;
             console.log(`Issue number is ${issueNumber}`);
             return { issueNumber };
+            
       - name: close issue 
         if: ${{ steps.analysis.outputs.similar-issues-found =='true' }}
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+#           const issueNumber = ${{ steps.get_issue_number.outputs.issueNumber }};
           script: |
-            const issueNumber = ${{ steps.get_issue_number.outputs.issueNumber }};
+            const issueNumber = 7;
              console.log(`Issue number isis ${issueNumber}`);
              console.log(`Issue number isis ${secrets.GITHUB_TOKEN}`);
             const octokit = github.getOctokit(context.token);
