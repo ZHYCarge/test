@@ -1,19 +1,33 @@
-name: Issues Similarity Analysis
+# name: Issues Similarity Analysis
 
+# on:
+#   issues:
+#     types: [opened, edited]
+
+# jobs:
+#   similarity-analysis:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: analysis
+#         uses: actions-cool/issues-similarity-analysis@v1
+#         with:
+#           filter-threshold: 0.7
+#           title-excludes: 'bug, not'
+#           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
+#           comment-body: '${index}. ${similarity} #${number}'
+
+name: Check for Duplicate Issues
 on:
   issues:
-    types: [opened, edited]
+    types: [opened]
 
 jobs:
-  similarity-analysis:
+  check-for-duplicates:
     runs-on: ubuntu-latest
     steps:
-      - name: analysis
-        uses: actions-cool/issues-similarity-analysis@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Check for duplicates
+        uses: andymckay/close-issues-duplicates@v1
         with:
-          filter-threshold: 0.7
-          title-excludes: 'bug, not'
-          comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
-          comment-body: '${index}. ${similarity} #${number}'
-          run:
-            echo"steps.step-id.outputs"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
