@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: analysis
-        id: getInfo
         uses: actions-cool/issues-similarity-analysis@v1
         with:
           filter-threshold: 0.7
@@ -17,5 +16,5 @@ jobs:
           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
           comment-body: '${index}. ${similarity} #${number}'
       - name: output things 
-        run: echo"${{ steps.getInfo.outputs }}"
+        run: echo"${{ steps.outputs }}"
 
