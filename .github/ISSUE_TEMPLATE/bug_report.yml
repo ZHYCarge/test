@@ -1,0 +1,41 @@
+name: Issue Template
+about: This is a template for reporting issues
+title: ''
+labels: ''
+assignees: ''
+
+description: >
+  **Description**
+  Please provide a detailed description of the issue here, including any error messages, screenshots, or steps to reproduce the issue.
+
+  **Expected behavior**
+  Please describe what you expected to happen.
+
+  **Actual behavior**
+  Please describe what actually happened.
+
+  **Steps to reproduce the issue**
+  1. 
+  2. 
+  3. 
+
+  **Additional context**
+  Add any other context about the problem here.
+
+  **Screenshots**
+  If applicable, add screenshots to help explain your problem.
+
+  **Environment**
+  - OS: 
+  - Browser: 
+  - Version: 
+
+# Make sure that the Description, Expected behavior, and Actual behavior fields are required.
+# The '>' symbol is used to indicate that the text following should be interpreted as a string.
+# The '*' symbol is used to indicate that the following line should be a required field.
+required:
+  - description
+  - >
+    *Expected behavior
+  - >
+    *Actual behavior
