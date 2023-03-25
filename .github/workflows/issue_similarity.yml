@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check for duplicates
-        uses: andymckay/close-issues-duplicates@v1
+      - name: Check for duplicates and close them
+        uses: dorny/autoclose@v1.2.1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
