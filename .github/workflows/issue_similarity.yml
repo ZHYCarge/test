@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: analysis
         uses: actions-cool/issues-similarity-analysis@v1
-        id: you1234
+        id: analysis
         with:
           filter-threshold: 0.7
           title-excludes: 'bug, not'
