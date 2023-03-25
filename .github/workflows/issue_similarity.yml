@@ -1,78 +1,21 @@
-# name: Issues Similarity Analysis
+name: Issues Similarity Analysis
 
-# on:
-#   issues:
-#     types: [opened, edited]
-
-# jobs:
-#   similarity-analysis:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: analysis
-#         uses: actions-cool/issues-similarity-analysis@v1
-#         with:
-#           filter-threshold: 0.7
-#           title-excludes: 'bug, not'
-#           comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
-#           comment-body: '${index}. ${similarity} #${number}'
-
-name: Check for Duplicate Issues
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
 
 jobs:
-  check-for-duplicates:
+  similarity-analysis:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Check for duplicates and close them
-        run: |
-          node -e '
-          const core = require("@actions/core");
-          const { Octokit } = require("@octokit/rest");
-          const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+      - name: analysis
+        id: getInfo
+        uses: actions-cool/issues-similarity-analysis@v1
+        with:
+          filter-threshold: 0.7
+          title-excludes: 'bug, not'
+          comment-title: '### 您的issue被检测到有重复内容，请先查看如下issue后再选择是否进行提问'
+          comment-body: '${index}. ${similarity} #${number}'
+      - name: output things 
+        run: echo"${{ steps.getInfo.outputs }}"
 
-          const issue = await octokit.rest.issues.get({
-            owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-            repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-            issue_number: process.env.GITHUB_ISSUE_NUMBER,
-          });
-
-          const query = `repo:${process.env.GITHUB_REPOSITORY} is:issue is:open in:title "${issue.data.title}"`;
-          const { data: { items } } = await octokit.rest.search.issuesAndPullRequests({ q: query });
-
-          const duplicates = items.filter((item) => item.number !== issue.data.number);
-          if (duplicates.length > 0) {
-            const comment = "This issue has been closed as a duplicate of the following issues:";
-            for (const duplicate of duplicates) {
-              await octokit.rest.issues.createComment({
-                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-                issue_number: process.env.GITHUB_ISSUE_NUMBER,
-                body: `- [#${duplicate.number}](${duplicate.html_url}): ${duplicate.title}`,
-              });
-              await octokit.rest.issues.addLabels({
-                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-                issue_number: process.env.GITHUB_ISSUE_NUMBER,
-                labels: ["duplicate"],
-              });
-              await octokit.rest.issues.update({
-                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-                issue_number: process.env.GITHUB_ISSUE_NUMBER,
-                state: "closed",
-              });
-            }
-            await octokit.rest.issues.createComment({
-              owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-              repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-              issue_number: process.env.GITHUB_ISSUE_NUMBER,
-              body: comment,
-            });
-          }
-          '
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
